@@ -2,7 +2,7 @@
 import { Chain } from 'wagmi'
 
 
-const qitmeerExplorer = { name: 'Qitmeer Scan', url: 'https://meerscan.io/' }
+const qitmeerExplorer = { name: 'Qitmeer Scan', url: 'https://evm.meerscan.io/' }
 
 export const qitmeer: Chain = {
     id: 813,
@@ -49,7 +49,7 @@ export const qitmeerTest: Chain = {
         },
     },
     blockExplorers: {
-        default: { name: 'Qitmeer Scan', url: 'https://testnet.meerscan.io/' },
+        default: { name: 'EVM Qitmeer Scan', url: 'https://testnet.qng.meerscan.io/' },
     },
     //   multicall: {
     //     address: '0xcA11bde05977b3631167028862bE2a173976CA11',
