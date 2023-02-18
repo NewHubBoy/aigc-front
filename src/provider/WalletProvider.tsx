@@ -1,4 +1,3 @@
-import { ReactNode } from "react"
 import {
     EthereumClient,
     modalConnectors,
@@ -28,7 +27,7 @@ const wagmiClient = createClient({
 // Web3Modal Ethereum Client
 const ethereumClient = new EthereumClient(wagmiClient, chains);
 
-const WalletProviser = ({ children }: { children: ReactNode }) => {
+const WalletProviser:React.FC<React.PropsWithChildren<{ children: React.ReactNode }>> = ({ children }) => {
     return <WagmiConfig client={wagmiClient}>
         {children}
         <Web3Modal ethereumClient={ethereumClient} projectId={'a50ff301780ea5ef8035791e3bd7dc1a'} defaultChain={qitmeerTest} />

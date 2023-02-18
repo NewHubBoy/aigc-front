@@ -5,17 +5,26 @@ import './locales/i18n'
 import { useTranslation } from "react-i18next";
 import { useWeb3Modal } from '@web3modal/react';
 import { useAccount } from 'wagmi';
+import { useCookies } from './provider/CookiesProvider';
 
 function App() {
+  console.log('env',process.env)
+  console.log('env',import.meta.env)
+  console.log('env',import.meta.env.VITE_APP_API)
   const [count, setCount] = useState(0)
   const { t, i18n } = useTranslation()
   const { open, isOpen } = useWeb3Modal()
   const { address } = useAccount()
+  const {cookie, setCookies} = useCookies(['name'])
   useEffect(() => {
     i18n.changeLanguage('zh')
   }, [])
   return (
     <div className="App">
+      <button onClick={() => {
+        setCookies('name', 'tom')
+      }}>set cookies</button>
+      <p>cookies:{cookie.name}</p>
       {t('home.hello')}
       {address}
       <div>

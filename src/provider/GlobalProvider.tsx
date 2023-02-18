@@ -33,7 +33,7 @@ export const useGlobal = (): GlobalState => {
     return context;
 };
 
-export const GlobalProvider = ({ children }: any) => {
+export const GlobalProvider:React.FC<React.PropsWithChildren<{ children: React.ReactNode }>> = ({ children }) => {
     return <StateProvider>{children}</StateProvider>;
 };
 
