@@ -5,7 +5,6 @@ import path, { resolve } from 'path'
 import SetEnvByCommandArg, { getCommandArgv } from 'vite-plugin-env-command';
 
 
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
 
@@ -25,6 +24,9 @@ export default defineConfig(({ mode }) => {
         // Specify symbolId format
         symbolId: 'icon-[dir]-[name]',
       })],
+    css: {
+      postcss: {}
+    },
     build: {
       minify: 'terser', // 默认为esbuild
       terserOptions: {

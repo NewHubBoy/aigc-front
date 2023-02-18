@@ -1,5 +1,45 @@
 {
-    "home": {
-        "hello": "你好"
+    "production": {
+        "keyboard": {
+            "title": "关键词、短句设置",
+            "placeholder1": "输入短句、形容词等描述画面。",
+            "placeholder2": "例如：黑色头发的帅气男孩，在草地里奔跑等。",
+            "tips": "试试这些关键词：",
+            "example1": "棕色头发等漂亮动漫女孩",
+            "example2": "在码头拉船等纤夫",
+            "example3": "充满未来感的城市"
+        },
+        "styles": {
+            "title": "风格设置"
+        },
+        "artists": {
+            "title": "画家设置"
+        },
+        "extensions": {
+            "title": "智能扩展（可选）",
+            "item1": "面部强化"
+        },
+        "steocount": {
+            "title": "步数设置",
+            "item1": "常规",
+            "item2": "加长"
+        },
+        "generalsettings": {
+            "title": "通用设置",
+            "label": "引导力度",
+            "placeholder": "输入0-25的数（默认为7.5）"
+        },
+        "generationratio": {
+            "title": "生成图比例"
+        },
+        "referenceimage": {
+            "title": "可上传参考图"
+        },
+        "drawingscount": {
+            "title": "作图数量"
+        },
+        "preview":{
+            "title":"生成预览"
+        }
     }
 }
