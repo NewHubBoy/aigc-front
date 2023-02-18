@@ -1,7 +1,7 @@
 .production-container {
     display: grid;
     grid-template-columns: 813px 566px;
-    padding-bottom: 400px;
+    padding-bottom: 200px;
     gap: 0 38px;
 }
 
@@ -258,12 +258,16 @@
         background-color: #AFE047;
         border-radius: 15px;
         transition: all .3s;
-        box-shadow: 0 20px 30px 0px #AFE047;
+        box-shadow: 0 20px 40px -4px #AFE047,0 2px 5px -2px rgba(0, 0, 0, 0.6);
         cursor: pointer;
 
         &:hover {
-            background-color: #d3f487;
-            box-shadow: 0 20px 30px 0px #d5f292;
+            background-color: #c8f65b;
+            box-shadow: 0 20px 40px -4px #cef377,0 2px 5px -2px rgba(0, 0, 0, 0.6);
+        }
+        &:active {
+            transform: translateY(2px);
+            box-shadow: 0 15px 40px -4px #cef377,0 2px 0px -2px rgba(0, 0, 0, 0.6);
         }
     }
 }
