@@ -112,7 +112,7 @@ ${t('production.keyboard.placeholder2') as string}`}
                             {/* <div className={styles['styles-item']}>默认</div> */}
                             {stylesList.map((item, index) => {
                                 return <div className={styles['styles-item']} style={{ backgroundImage: `url(${item.poster})` }} onClick={() => setCurrentStyles(item.text)} key={item.text}>
-                                    <div className={`${styles['item-mark']} ${currentStyles === item.text ? styles['active'] : ''}`}>{item.text}</div>
+                                    <div className={`${styles['item-mark']} ${currentStyles === item.text ? styles['active'] : ''}`}>{t("production.config." + item.text)}</div>
                                 </div>
                             })}
                         </div>
@@ -125,7 +125,7 @@ ${t('production.keyboard.placeholder2') as string}`}
                             {/* <div className={styles['styles-item']}>默认</div> */}
                             {artistsList.map((item, index) => {
                                 return <div className={styles['styles-item']} style={{ backgroundImage: `url(${item.poster})` }} onClick={() => setCurrentArtists(item.text)} key={item.text}>
-                                    <div className={`${styles['item-mark']} ${currentArtists === item.text ? styles['active'] : ''}`}>{item.text}</div>
+                                    <div className={`${styles['item-mark']} ${currentArtists === item.text ? styles['active'] : ''}`}>{t("production.config." + item.text)}</div>
                                 </div>
                             })}
                         </div>
@@ -169,7 +169,7 @@ ${t('production.keyboard.placeholder2') as string}`}
                             {ratioList.map((item, index) => {
                                 return <div key={index + 'ratio'} className={styles['ratio-item']} style={{
                                     backgroundImage: `url(${ratio === index ? item.active : item.normal})`
-                                }} onClick={()=>setRatio(index)}></div>
+                                }} onClick={() => setRatio(index)}></div>
                             })}
                         </div>
                     </div>
@@ -187,22 +187,14 @@ ${t('production.keyboard.placeholder2') as string}`}
                     </div>
                 </AigcContentBox>
                 <div className={styles['generation']}>
-                    <div className={styles['generation-button']}>立即生成</div>
+                    <div className={styles['generation-button']}>{t('production.generatenow')}</div>
                 </div>
             </div>
             <div className={styles['production-preview']}>
                 <AigcContentBox disableIcon className={styles['preview-container']}>
                     <div className={styles['preview-img']}></div>
                     <div className={styles['special-text']}>
-                        <div className={styles['special-point']} />
-                        生
-                        <div className={styles['special-point']} />
-                        成
-                        <div className={styles['special-point']} />
-                        预
-                        <div className={styles['special-point']} />
-                        览
-                        <div className={styles['special-point']} />
+                        {BottomText(t('production.preview.title'), 1)}
                     </div>
                 </AigcContentBox>
                 <AigcContentBox disableIcon className={styles['history-container']}>
@@ -216,20 +208,34 @@ ${t('production.keyboard.placeholder2') as string}`}
                         </div>
                     </div>
                     <div className={styles['special-text']}>
-                        <div className={styles['special-point1']} />
-                        历
-                        <div className={styles['special-point1']} />
-                        史
-                        <div className={styles['special-point1']} />
-                        生
-                        <div className={styles['special-point1']} />
-                        成
-                        <div className={styles['special-point1']} />
+                        {BottomText(t('production.history.title'), 0)}
                     </div>
                 </AigcContentBox>
             </div>
         </div>
     </Fragment>
+}
+
+const BottomText = (str: string, type = 1) => {
+    const reg = /[\u4e00-\u9fa5]/
+    if (reg.test(str)) {
+        const _str = str.split('')
+        return <Fragment>
+            <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
+            {_str.map((item, index) => {
+                return <Fragment key={index + 'special'}>
+                    {item}
+                    <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
+                </Fragment>
+            })}
+        </Fragment>
+    } else {
+        return <Fragment>
+            <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
+            {str}
+            <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
+        </Fragment>
+    }
 }
 
 export default Production
