@@ -9,6 +9,9 @@
             "example2": "在码头拉船等纤夫",
             "example3": "充满未来感的城市"
         },
+        "engines": {
+            "title": "引擎设置"
+        },
         "styles": {
             "title": "风格设置"
         },

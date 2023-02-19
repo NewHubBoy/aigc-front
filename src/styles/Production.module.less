@@ -36,6 +36,61 @@
     }
 }
 
+.engines {
+    grid-column: span 2;
+
+    .setting-container {
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-y: hidden;
+        overflow-x: auto;
+        gap: 20px;
+        padding-bottom: 10px;
+        .setting-item {
+            min-width: 140px;
+            flex-shrink: 0;
+            padding: 0 10px;
+            height: 66px;
+            background-color: RGBA(45, 46, 46, 1);
+            cursor: pointer;
+            border-radius: 8px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            box-shadow: 0 2px 8px -3px rgba(0, 0, 0, 0.2);
+
+            &:hover {
+                background-color: RGBA(45, 46, 46, 0.9);
+            }
+        }
+    }
+
+    .setting-container::-webkit-scrollbar {
+        /*滚动条整体样式*/
+        width: 1px;
+        /*高宽分别对应横竖滚动条的尺寸*/
+        height: 10px;
+    }
+
+    .setting-container::-webkit-scrollbar-thumb {
+        /*滚动条里面小方块*/
+        border-radius: 10px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+        background: rgba(176, 211, 89, 1);
+    }
+
+    .setting-container::-webkit-scrollbar-track {
+        /*滚动条里面轨道*/
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        background: rgba(227, 243, 179, 0.6);
+    }
+
+}
+
 .styles,
 .artists {
     grid-column: span 2;
@@ -85,9 +140,50 @@
         grid-gap: 10px;
 
         .styles-item {
+            position: relative;
             background-color: #ccc;
             border-radius: 18px;
             height: 66px;
+            color: #fff;
+            font-size: 19px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // background-position: top;
+            background-size: cover;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            cursor: pointer;
+
+            &:nth-child(1) {
+                background-color: #AEDF48;
+            }
+
+            .item-mark {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .active {
+                background-color: transparent;
+            }
+        }
+    }
+}
+
+.artists {
+    .styles-list {
+        .styles-item {
+            &:nth-child(1) {
+                background-color: #2D2E2E;
+            }
         }
     }
 }
@@ -151,6 +247,7 @@
                 background-color: rgba(246, 246, 245, 1);
                 border-radius: 8px;
                 box-shadow: inset 0 0px 10px 0px rgba(0, 0, 0, 0.06);
+
                 &::placeholder {
                     font-size: 19px;
                 }
@@ -258,16 +355,17 @@
         background-color: #AFE047;
         border-radius: 15px;
         transition: all .3s;
-        box-shadow: 0 20px 40px -4px #AFE047,0 2px 5px -2px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 20px 40px -4px #AFE047, 0 2px 5px -2px rgba(0, 0, 0, 0.6);
         cursor: pointer;
 
         &:hover {
             background-color: #c8f65b;
-            box-shadow: 0 20px 40px -4px #cef377,0 2px 5px -2px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 40px -4px #cef377, 0 2px 5px -2px rgba(0, 0, 0, 0.6);
         }
+
         &:active {
             transform: translateY(2px);
-            box-shadow: 0 15px 40px -4px #cef377,0 2px 0px -2px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 40px -4px #cef377, 0 2px 0px -2px rgba(0, 0, 0, 0.6);
         }
     }
 }

@@ -39,11 +39,12 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         "/api": {
-          target: process.env.NODE_ENV && process.env.NODE_ENV === 'pro' ? 'prew_api' : process.env.VITE_APP_API,
+          target: process.env.VITE_APP_API,
           changeOrigin: true,
-          // rewrite: (path) => path.replace(/^\/api/, ""),
+          rewrite: (path) => path.replace(/^\/api/, "/api"),
         },
       },
+      // https: true
     },
     publicDir: "public",
     base: './',
