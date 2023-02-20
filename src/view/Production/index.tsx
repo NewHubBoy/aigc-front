@@ -2,9 +2,9 @@ import styles from "@/styles/Production.module.less"
 import { Input, InputNumber } from "antd"
 import { Fragment, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import AigcContentBox from "../../components/AigcContentBox"
-import Tag from "../../components/AigcContentBox/Tags"
-import Title from "../../components/AigcContentBox/Title"
+import AigcContentBox from "../../components/Production/AigcContentBox"
+import Tag from "../../components/Production/AigcContentBox/Tags"
+import Title from "../../components/Production/AigcContentBox/Title"
 import { ratioList } from '../../context/config/productionConfig'
 
 // ratio
@@ -14,9 +14,11 @@ import normal4_3 from '../../assets/Images/production/4-3normal.png'
 import normal9_16 from '../../assets/Images/production/9-16normal.png'
 import normal16_9 from '../../assets/Images/production/16-9normal.png'
 import { use } from "i18next"
-import { get, post } from "../../utils/request"
+import { get, post, postForm } from "../../utils/request"
 import { Artists, Engines, PaintingOptions, Styles } from "../../type"
 import { SUCCESS_CODE } from "../../context/config/httpStatus"
+import UpLoad from "../../components/Production/UpLoad"
+import BottomText from "../../components/Production/BottomText"
 
 
 
@@ -49,8 +51,40 @@ const Production = () => {
     const [currentArtists, setCurrentArtists] = useState<string>('不限定')
     const [extensions, setExtensions] = useState<boolean>(false)
     const [stepCount, setStepCount] = useState<any>(0)
-    const [general, setGeneral] = useState<number>(0)
+    const [general, setGeneral] = useState<number>(7.5)
     const [ratio, setRatio] = useState<number>(0)
+    // example imag
+    const [exampleImage, setExampleImage] = useState<File | Blob | null>(null)
+    // image count
+    const [imageCount, setImageCount] = useState<number>(1)
+
+    const handleGeneration = async () => {
+        // const formData = new FormData();
+        // formData.append('key1', 'value1');
+        // formData.append('key2', 'value2');
+
+        const formData = new FormData()
+
+        formData.append('prompt', keyBoard || '棕色头发等漂亮动漫女孩')
+        formData.append('style', currentStyles)
+        formData.append('guidence_scale', general + '')
+        formData.append('enable_face_enhance', extensions ? '1' : '0')
+        formData.append('steps_mode', stepCount + '')
+        formData.append('ratio', ratio + '')
+        formData.append('painting_times', imageCount + '')
+        if (exampleImage) {
+            formData.append('source_image', exampleImage as Blob)
+        }
+        // Display the values
+        for (const value of formData.values()) {
+            console.log(value);
+        }
+
+        const { code, data, msg } = await postForm('/order/constructOrder', formData)
+
+        console.log('response', { code, data, msg })
+    }
+
 
     const fetchConfig = async () => {
         setConfigLoading(true)
@@ -66,6 +100,10 @@ const Production = () => {
             // setCurrentEngines(Data.engines[0])
         }
         setConfigLoading(false)
+    }
+
+    const handleFileChange = (file: File) => {
+        setExampleImage(file)
     }
 
     useEffect(() => {
@@ -176,18 +214,24 @@ ${t('production.keyboard.placeholder2') as string}`}
                 </AigcContentBox>
                 <AigcContentBox className={styles['reference-image']}>
                     <Title>{t('production.referenceimage.title')}</Title>
-                    <div className={styles['upload-container']}>+</div>
+                    <UpLoad onChange={handleFileChange} />
                 </AigcContentBox>
                 <AigcContentBox className={styles['drawings-count']}>
                     <Title>{t('production.drawingscount.title')}</Title>
                     <div className={styles['setting-container']}>
-                        <div className={styles['left']}>{'<'}</div>
-                        <div className={styles['center']}>6</div>
-                        <div className={styles['right']}>{'>'}</div>
+                        <div className={styles['left']} onClick={() => {
+                            if (imageCount <= 1) return
+                            setImageCount(imageCount - 1)
+                        }}>{'<'}</div>
+                        <div className={styles['center']}>{imageCount}</div>
+                        <div className={styles['right']} onClick={() => {
+                            if (imageCount >= 10) return;
+                            setImageCount(imageCount + 1)
+                        }}>{'>'}</div>
                     </div>
                 </AigcContentBox>
                 <div className={styles['generation']}>
-                    <div className={styles['generation-button']}>{t('production.generatenow')}</div>
+                    <div className={styles['generation-button']} onClick={handleGeneration}>{t('production.generatenow')}</div>
                 </div>
             </div>
             <div className={styles['production-preview']}>
@@ -214,28 +258,6 @@ ${t('production.keyboard.placeholder2') as string}`}
             </div>
         </div>
     </Fragment>
-}
-
-const BottomText = (str: string, type = 1) => {
-    const reg = /[\u4e00-\u9fa5]/
-    if (reg.test(str)) {
-        const _str = str.split('')
-        return <Fragment>
-            <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
-            {_str.map((item, index) => {
-                return <Fragment key={index + 'special'}>
-                    {item}
-                    <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
-                </Fragment>
-            })}
-        </Fragment>
-    } else {
-        return <Fragment>
-            <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
-            {str}
-            <div className={type === 1 ? styles['special-point'] : styles['special-point1']} />
-        </Fragment>
-    }
 }
 
 export default Production

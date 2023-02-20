@@ -40,8 +40,16 @@ export const get = async (url: string, _data?: object): Promise<ResponseData> =>
   return data
 }
 
-export const post = async (url: string, _data?: object) => {
+export const post = async (url: string, _data?: object): Promise<ResponseData> => {
   const { data } = await axiosInstance({ method: 'post', url, data: _data, headers: { 'Authorization': localAuth() } })
+  return data
+}
+const _formDat = new FormData()
+type formData = typeof _formDat
+
+
+export const postForm = async (url: string, _data: formData): Promise<ResponseData> => {
+  const { data } = await axiosInstance({ method: 'post', url, data: _data, headers: { 'Authorization': localAuth(), "Content-Type": "multipart/form-data" } })
   return data
 }
 
