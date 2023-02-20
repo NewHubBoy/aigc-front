@@ -126,3 +126,4 @@ export const artistsList = [{
     label: "新动漫",
     bgSrc: NewAnimation
 }]
+ 

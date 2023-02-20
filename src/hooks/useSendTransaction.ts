@@ -5,7 +5,7 @@ import {
 } from 'wagmi';
 
 
-const useSendTransaction = ({ to, inputData }: { to: string, inputData: string }) => {
+const useSendTransaction = ({ to, inputData, value = "0x0" }: { to: string, inputData: string, value: string }) => {
 
     let config: any = {
         mode: "prepared",
@@ -13,10 +13,10 @@ const useSendTransaction = ({ to, inputData }: { to: string, inputData: string }
             data: inputData,
             gasLimit: 500000,
             to,
-            value: "0x0"
+            value
         }
     }
-    
+
     const { data, sendTransaction } = useSendTransactionForWagmi(config)
     const { isLoading, isError, isSuccess, data: WaitData } = useWaitForTransaction({ hash: data?.hash })
 

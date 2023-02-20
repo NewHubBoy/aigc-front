@@ -1,5 +1,5 @@
 import styles from "@/styles/Production.module.less"
-import { Input, InputNumber } from "antd"
+import { Input, InputNumber, message } from "antd"
 import { Fragment, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import AigcContentBox from "../../components/Production/AigcContentBox"
@@ -15,10 +15,15 @@ import normal9_16 from '../../assets/Images/production/9-16normal.png'
 import normal16_9 from '../../assets/Images/production/16-9normal.png'
 import { use } from "i18next"
 import { get, post, postForm } from "../../utils/request"
-import { Artists, Engines, PaintingOptions, Styles } from "../../type"
+import { Artists, Engines, OrderResponse, OrderState, PaintingOptions, Styles } from "../../type/Produciton"
 import { SUCCESS_CODE } from "../../context/config/httpStatus"
 import UpLoad from "../../components/Production/UpLoad"
 import BottomText from "../../components/Production/BottomText"
+import { useContractRead } from "wagmi"
+import PaintingDeductionABI from '../../context/abi/PaintingDeduction.json'
+import { BigNumberish, ethers } from "ethers"
+import useSendTransaction from "../../hooks/useSendTransaction"
+import GenerationButton from "../../components/Production/GenerationButton"
 
 
 
@@ -37,6 +42,8 @@ const Production = () => {
         label: t('production.steocount.item2')
     }]
 
+    const [paintingPrice, SetPaintingPrice] = useState<string>('')
+    const [paintingOrderId, setPaintingOrderId] = useState<string>('')
 
     const [keyBoard, setKeyBoard] = useState('')
     // styles data
@@ -46,9 +53,10 @@ const Production = () => {
     // Engines
     // const [engines, setEngines] = useState<Engines[]>([])
     const [configLoading, setConfigLoading] = useState<boolean>(false)
+    const [historyLoading, setHistoryLoading] = useState<boolean>(false)
     // const [currentEngines, setCurrentEngines] = useState<Engines>('通用')
-    const [currentStyles, setCurrentStyles] = useState<string>('不限定')
-    const [currentArtists, setCurrentArtists] = useState<string>('不限定')
+    const [currentStyles, setCurrentStyles] = useState<string>('0')
+    const [currentArtists, setCurrentArtists] = useState<string>('0')
     const [extensions, setExtensions] = useState<boolean>(false)
     const [stepCount, setStepCount] = useState<any>(0)
     const [general, setGeneral] = useState<number>(7.5)
@@ -57,6 +65,19 @@ const Production = () => {
     const [exampleImage, setExampleImage] = useState<File | Blob | null>(null)
     // image count
     const [imageCount, setImageCount] = useState<number>(1)
+    // historydata
+    const [historyData, setHistoryData] = useState<OrderResponse[]>([])
+    // preview
+    const [preview, setPrivew] = useState<OrderResponse | null>(null)
+
+    // const { data: PaintingPrice, refetch } = useContractRead({
+    //     abi: PaintingDeductionABI,
+    //     address: '0xc4B9e7cf99e0C50Fee6890D55a3CC0F9E51a27F6',
+    //     functionName: 'getPointPrice',
+    //     args: []
+    // })
+
+
 
     const handleGeneration = async () => {
         // const formData = new FormData();
@@ -67,6 +88,7 @@ const Production = () => {
 
         formData.append('prompt', keyBoard || '棕色头发等漂亮动漫女孩')
         formData.append('style', currentStyles)
+        formData.append('artist', currentArtists)
         formData.append('guidence_scale', general + '')
         formData.append('enable_face_enhance', extensions ? '1' : '0')
         formData.append('steps_mode', stepCount + '')
@@ -81,8 +103,23 @@ const Production = () => {
         }
 
         const { code, data, msg } = await postForm('/order/constructOrder', formData)
-
+        if (code === SUCCESS_CODE) {
+            setPaintingOrderId(data.order.order_id)
+            SetPaintingPrice(data.order.price)
+        }
         console.log('response', { code, data, msg })
+    }
+
+    const fetchHistory = async () => {
+        setHistoryLoading(true)
+        const { code, data, msg } = await get('/order/historyOrders')
+        if (code === SUCCESS_CODE) {
+            const _data: OrderResponse[] = data
+            setHistoryData(_data)
+
+        }
+        console.log('/order/historyOrders', data)
+        setHistoryLoading(false)
     }
 
 
@@ -95,8 +132,8 @@ const Production = () => {
             setStylesList(Data.styles)
             // setEngines(Data.engines)
 
-            setCurrentStyles(Data.styles[0].text)
-            setCurrentArtists(Data.artists[0].text)
+            setCurrentStyles(Data.styles[0].id)
+            setCurrentArtists(Data.artists[0].id)
             // setCurrentEngines(Data.engines[0])
         }
         setConfigLoading(false)
@@ -108,6 +145,12 @@ const Production = () => {
 
     useEffect(() => {
         fetchConfig()
+        fetchHistory()
+        // refetch()
+        // if (PaintingPrice) {
+        //     SetPaintingPrice(ethers.utils.formatUnits(PaintingPrice as BigNumberish, 18))
+        // }
+        // console.log('price', ethers.utils.formatUnits(PaintingPrice as BigNumberish, 18))
     }, [])
 
     return <Fragment>
@@ -149,8 +192,8 @@ ${t('production.keyboard.placeholder2') as string}`}
                         <div className={styles['styles-list']}>
                             {/* <div className={styles['styles-item']}>默认</div> */}
                             {stylesList.map((item, index) => {
-                                return <div className={styles['styles-item']} style={{ backgroundImage: `url(${item.poster})` }} onClick={() => setCurrentStyles(item.text)} key={item.text}>
-                                    <div className={`${styles['item-mark']} ${currentStyles === item.text ? styles['active'] : ''}`}>{t("production.config." + item.text)}</div>
+                                return <div className={styles['styles-item']} style={{ backgroundImage: `url(${item.poster})` }} onClick={() => setCurrentStyles(item.id)} key={item.text}>
+                                    <div className={`${styles['item-mark']} ${currentStyles === item.id ? styles['active'] : ''}`}>{t("production.config." + item.text)}</div>
                                 </div>
                             })}
                         </div>
@@ -162,8 +205,8 @@ ${t('production.keyboard.placeholder2') as string}`}
                         <div className={styles['styles-list']}>
                             {/* <div className={styles['styles-item']}>默认</div> */}
                             {artistsList.map((item, index) => {
-                                return <div className={styles['styles-item']} style={{ backgroundImage: `url(${item.poster})` }} onClick={() => setCurrentArtists(item.text)} key={item.text}>
-                                    <div className={`${styles['item-mark']} ${currentArtists === item.text ? styles['active'] : ''}`}>{t("production.config." + item.text)}</div>
+                                return <div className={styles['styles-item']} style={{ backgroundImage: `url(${item.poster})` }} onClick={() => setCurrentArtists(item.id)} key={item.text}>
+                                    <div className={`${styles['item-mark']} ${currentArtists === item.id ? styles['active'] : ''}`}>{t("production.config." + item.text)}</div>
                                 </div>
                             })}
                         </div>
@@ -232,11 +275,12 @@ ${t('production.keyboard.placeholder2') as string}`}
                 </AigcContentBox>
                 <div className={styles['generation']}>
                     <div className={styles['generation-button']} onClick={handleGeneration}>{t('production.generatenow')}</div>
+                    {paintingOrderId && paintingPrice && <GenerationButton orderId={paintingOrderId} price={paintingPrice} />}
                 </div>
             </div>
             <div className={styles['production-preview']}>
                 <AigcContentBox disableIcon className={styles['preview-container']}>
-                    <div className={styles['preview-img']}></div>
+                    <div className={styles['preview-img']}>{preview?.order_id ? preview.order_id : historyData ? historyData[0]?.order_id : 'no data'}</div>
                     <div className={styles['special-text']}>
                         {BottomText(t('production.preview.title'), 1)}
                     </div>
@@ -244,11 +288,9 @@ ${t('production.keyboard.placeholder2') as string}`}
                 <AigcContentBox disableIcon className={styles['history-container']}>
                     <div className={styles['history-conttol']}>
                         <div className={styles['history']}>
-                            <div className={styles['history-item']}></div>
-                            <div className={styles['history-item']}></div>
-                            <div className={styles['history-item']}></div>
-                            <div className={styles['history-item']}></div>
-                            <div className={styles['history-item']}></div>
+                            {historyData.map((item) => {
+                                return <div className={styles['history-item']} key={item.order_id} onClick={() => setPrivew(item)}>{item.order_id}</div>
+                            })}
                         </div>
                     </div>
                     <div className={styles['special-text']}>
