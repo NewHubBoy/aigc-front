@@ -24,6 +24,7 @@ import PaintingDeductionABI from '../../context/abi/PaintingDeduction.json'
 import { BigNumberish, ethers } from "ethers"
 import useSendTransaction from "../../hooks/useSendTransaction"
 import GenerationButton from "../../components/Production/GenerationButton"
+import ReactInterval from 'react-interval';
 
 const OrderState = {
     //0.待创建 、1.待处理、2.处理中、 3.处理成功、4.处理失败
@@ -79,12 +80,33 @@ const Production = () => {
     // preview
     const [preview, setPrivew] = useState<OrderResponse | null>(null)
 
+    // init interval ID
+    const [intervalId, setIntervalId] = useState<any>(null)
+
+    // 
+    const [currentState, setCurrentState] = useState(3)
+
     // const { data: PaintingPrice, refetch } = useContractRead({
     //     abi: PaintingDeductionABI,
     //     address: '0xc4B9e7cf99e0C50Fee6890D55a3CC0F9E51a27F6',
     //     functionName: 'getPointPrice',
     //     args: []
     // })
+    const initData = () => {
+
+        // 初始化 数据
+        setPaintingOrderId('')
+        SetPaintingPrice('')
+        setKeyBoard('')
+        setCurrentStyles('0')
+        setCurrentArtists('0')
+        setExtensions(false)
+        setStepCount(0)
+        setGeneral(7.5)
+        setRatio(0)
+        setExampleImage(null)
+        setImageCount(1)
+    }
 
 
 
@@ -94,7 +116,7 @@ const Production = () => {
         // formData.append('key2', 'value2');
 
         const formData = new FormData()
-        if(!keyBoard) return message.error('Key words is required !')
+        if (!keyBoard) return message.error('Key words is required !')
         formData.append('prompt', keyBoard)
         formData.append('style', currentStyles)
         formData.append('artist', currentArtists)
@@ -121,9 +143,8 @@ const Production = () => {
 
     const fetchHistory = async () => {
         // 初始化 数据
-        setPaintingOrderId('')
-        SetPaintingPrice('')
-        
+        initData()
+
         setHistoryLoading(true)
         const { code, data, msg } = await get('/order/historyOrders')
         if (code === SUCCESS_CODE) {
@@ -156,9 +177,23 @@ const Production = () => {
         setExampleImage(file)
     }
 
+    const checkOrderState = async () => {
+        const { code, data, msg } = await get(`/order/${paintingOrderId}/state`)
+        setCurrentState(data.state)
+        if (data.state === 3) {
+            fetchHistory()
+        }
+    }
+
+    const contractCallBack = () => {
+        fetchHistory()
+        setCurrentState(0)
+    }
+
     useEffect(() => {
         fetchConfig()
         fetchHistory()
+        // checkOrderState('32')
         // refetch()
         // if (PaintingPrice) {
         //     SetPaintingPrice(ethers.utils.formatUnits(PaintingPrice as BigNumberish, 18))
@@ -166,7 +201,15 @@ const Production = () => {
         // console.log('price', ethers.utils.formatUnits(PaintingPrice as BigNumberish, 18))
     }, [])
 
+    useEffect(() => {
+        if (historyData.length && historyData[0].state === 3) {
+            console.log('-=========', historyData[0])
+            setPrivew(historyData[0])
+        }
+    }, [historyData])
+
     return <Fragment>
+        {/* <ReactInterval callback={checkOrderState} timeout={3000} enabled={currentState !== 3} /> */}
         <div className={styles['production-container']} id={'production'}>
             <div className={styles['pruduction-setting']}>
                 <AigcContentBox className={styles['keyboard']}>
@@ -288,7 +331,7 @@ ${t('production.keyboard.placeholder2') as string}`}
                 </AigcContentBox>
                 <div className={styles['generation']}>
                     <div className={styles['generation-button']} onClick={handleGeneration}>{t('production.generatenow')}</div>
-                    {paintingOrderId && paintingPrice && <GenerationButton orderId={paintingOrderId} price={paintingPrice} callback={fetchHistory} />}
+                    {paintingOrderId && paintingPrice && <GenerationButton orderId={paintingOrderId} price={paintingPrice} callback={contractCallBack} />}
                 </div>
             </div>
             <div className={styles['production-preview']}>

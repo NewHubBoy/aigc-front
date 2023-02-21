@@ -24,6 +24,7 @@ import PaintingDeductionABI from '../../context/abi/PaintingDeduction.json'
 import { BigNumberish, ethers } from "ethers"
 import useSendTransaction from "../../hooks/useSendTransaction"
 import GenerationButton from "../../components/Production/GenerationButton"
+import ReactInterval from 'react-interval';
 
 const OrderState = {
     //0.待创建 、1.待处理、2.处理中、 3.处理成功、4.处理失败
@@ -79,12 +80,32 @@ const Production = () => {
     // preview
     const [preview, setPrivew] = useState<OrderResponse | null>(null)
 
+    const [curretnState, setCurrentState] = useState<any>(3);
+
     // const { data: PaintingPrice, refetch } = useContractRead({
     //     abi: PaintingDeductionABI,
     //     address: '0xc4B9e7cf99e0C50Fee6890D55a3CC0F9E51a27F6',
     //     functionName: 'getPointPrice',
     //     args: []
     // })
+
+    const initData = () => {
+
+        // 初始化 数据
+        setPaintingOrderId('')
+        SetPaintingPrice('')
+        setKeyBoard('')
+        setCurrentStyles('0')
+        setCurrentArtists('0')
+        setExtensions(false)
+        setStepCount(0)
+        setGeneral(7.5)
+        setRatio(0)
+        setExampleImage(null)
+        setImageCount(1)
+        // 
+        setCurrentState(3)
+    }
 
 
 
@@ -120,10 +141,7 @@ const Production = () => {
     }
 
     const fetchHistory = async () => {
-        // 初始化 数据
-        setPaintingOrderId('')
-        SetPaintingPrice('')
-
+        initData()
         setHistoryLoading(true)
         const { code, data, msg } = await get('/order/historyOrders')
         if (code === SUCCESS_CODE) {
@@ -169,6 +187,17 @@ const Production = () => {
         }
         message.success('sendTransction success')
         fetchHistory()
+        setCurrentState(0)
+    }
+
+
+    const checkOrderState = async (order_id: string) => {
+        console.log('checkState')
+        const { code, data, msg } = await get(`/order/${order_id}/state`)
+        setCurrentState(data.state)
+        if (data.state === 3) {
+            fetchHistory()
+        }
     }
 
     useEffect(() => {
@@ -187,12 +216,21 @@ const Production = () => {
         }
     }, [paintingOrderId, paintingPrice])
 
+
+    useEffect(() => {
+        if (historyData.length && historyData[0].state === 3) {
+            console.log('-=========', historyData[0])
+            setPrivew(historyData[0])
+        }
+    }, [historyData])
+
     return <Fragment>
         <h2 style={{
             fontSize: 32,
             textAlign: 'center',
             marginBottom: 20
         }}>Example</h2>
+        {/* <ReactInterval callback={() => { checkOrderState(paintingOrderId) }} timeout={3000} enabled={curretnState !== 3} />  */}
         <div className={styles['production-container']} id={'production'}>
             <div className={styles['pruduction-setting']}>
                 <AigcContentBox className={styles['keyboard']}>
