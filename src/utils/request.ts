@@ -53,5 +53,10 @@ export const postForm = async (url: string, _data: formData): Promise<ResponseDa
   return data
 }
 
+export const debugPost = async (url: string, _data?: object): Promise<ResponseData> => {
+  const { data } = await axiosInstance({ method: 'post', baseURL: import.meta.env.VITE_APP_API, url, data: _data, headers: { 'Authorization': localAuth() } })
+  return data
+}
+
 
 export default axiosInstance

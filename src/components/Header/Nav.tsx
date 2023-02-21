@@ -9,6 +9,7 @@ const NavBar = ()=>{
         <ul className={styles['nav-list']}>
             <li className={styles['active']}>
                 <Link to="/">{t('layout.head.home')}</Link>
+                <Link to="/example">{'Example'}</Link>
             </li>
         </ul>
     </div>

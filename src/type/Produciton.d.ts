@@ -16,14 +16,7 @@ export interface PaintingOptions {
     // engines: Engines[]
 }
 
-export enum OrderState {
-    //0.待创建 、1.待处理、2.处理中、 3.处理成功、4.处理失败
-    0 = "待创建",
-    1 = "待处理",
-    2 = "处理中",
-    3 = "处理成功",
-    4 = "处理失败"
-}
+
 
 export interface OrderResponse {
     created_at: string
@@ -36,4 +29,5 @@ export interface OrderResponse {
     state: 0 | 1 | 2 | 3 | 4
     updated_at: string
     user_id: string
+    result_image: string
 }

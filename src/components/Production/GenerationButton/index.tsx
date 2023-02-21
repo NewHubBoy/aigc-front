@@ -1,10 +1,11 @@
 import styles from "@/styles/Production.module.less"
+import { message } from "antd"
 import { ethers } from "ethers"
 import { useEffect, useLayoutEffect } from "react"
 import { useTranslation } from 'react-i18next'
 import PaintingDeductionABI from '../../../context/abi/PaintingDeduction.json'
 import useSendTransaction from "../../../hooks/useSendTransaction"
-const GenerationButton = ({ orderId, price }: { orderId: string, price: string }) => {
+const GenerationButton = ({ orderId, price, callback }: { orderId: string, price: string, callback?: () => void }) => {
     const { t } = useTranslation()
     const _interface = new ethers.utils.Interface(PaintingDeductionABI)
     const _encodeData = _interface.encodeFunctionData('bidSale', [orderId])
@@ -27,6 +28,8 @@ const GenerationButton = ({ orderId, price }: { orderId: string, price: string }
     useEffect(() => {
         if (isSuccess) {
             if (WaitData) {
+                callback && callback()
+                message.success('sendTransction success')
                 console.log(WaitData)
             }
         }

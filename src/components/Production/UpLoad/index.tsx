@@ -46,9 +46,9 @@ const UpLoad: React.FC<PropsWithChildren<{ onChange: (file: File) => void }>> = 
                 {preview ?
                     <div className={styles['preview-content']}>
                         <div className={styles['preview-content']} style={{
-                            backgroundImage:`url(${preview as string})`
+                            backgroundImage: `url(${preview as string})`
                         }}></div>
-                    </div> : '+'}
+                    </div> : <span>{'+'}</span>}
             </div>
         </label>
     </Fragment>

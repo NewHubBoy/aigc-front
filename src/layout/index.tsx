@@ -7,7 +7,7 @@ const Layout: React.FC<PropsWithChildren<{ children: ReactNode }>> = ({ children
     return <Fragment>
         <Header />
         {children}
-        <Footer/>
+        {/* <Footer/> */}
     </Fragment>
 }
 

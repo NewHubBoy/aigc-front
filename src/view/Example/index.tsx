@@ -14,7 +14,7 @@ import normal4_3 from '../../assets/Images/production/4-3normal.png'
 import normal9_16 from '../../assets/Images/production/9-16normal.png'
 import normal16_9 from '../../assets/Images/production/16-9normal.png'
 import { use } from "i18next"
-import { get, post, postForm } from "../../utils/request"
+import { debugPost, get, post, postForm } from "../../utils/request"
 import { Artists, Engines, OrderResponse, PaintingOptions, Styles } from "../../type/Produciton"
 import { SUCCESS_CODE } from "../../context/config/httpStatus"
 import UpLoad from "../../components/Production/UpLoad"
@@ -94,7 +94,7 @@ const Production = () => {
         // formData.append('key2', 'value2');
 
         const formData = new FormData()
-        if(!keyBoard) return message.error('Key words is required !')
+        if (!keyBoard) return message.error('Key words is required !')
         formData.append('prompt', keyBoard)
         formData.append('style', currentStyles)
         formData.append('artist', currentArtists)
@@ -123,7 +123,7 @@ const Production = () => {
         // 初始化 数据
         setPaintingOrderId('')
         SetPaintingPrice('')
-        
+
         setHistoryLoading(true)
         const { code, data, msg } = await get('/order/historyOrders')
         if (code === SUCCESS_CODE) {
@@ -156,6 +156,21 @@ const Production = () => {
         setExampleImage(file)
     }
 
+    // example fetch success
+    const fetchSuccess = async ({ order_id }: { order_id: string }) => {
+        const formData = new FormData()
+        formData.append('order_id', order_id)
+        try {
+            const { code, data, msg } = await debugPost('debug/smartContractDone', formData)
+        } catch (error) {
+            // message.error('net word error')
+            console.log(error)
+
+        }
+        message.success('sendTransction success')
+        fetchHistory()
+    }
+
     useEffect(() => {
         fetchConfig()
         fetchHistory()
@@ -166,7 +181,18 @@ const Production = () => {
         // console.log('price', ethers.utils.formatUnits(PaintingPrice as BigNumberish, 18))
     }, [])
 
+    useEffect(() => {
+        if (paintingOrderId && paintingPrice) {
+            fetchSuccess({ order_id: paintingOrderId })
+        }
+    }, [paintingOrderId, paintingPrice])
+
     return <Fragment>
+        <h2 style={{
+            fontSize: 32,
+            textAlign: 'center',
+            marginBottom: 20
+        }}>Example</h2>
         <div className={styles['production-container']} id={'production'}>
             <div className={styles['pruduction-setting']}>
                 <AigcContentBox className={styles['keyboard']}>
@@ -288,7 +314,7 @@ ${t('production.keyboard.placeholder2') as string}`}
                 </AigcContentBox>
                 <div className={styles['generation']}>
                     <div className={styles['generation-button']} onClick={handleGeneration}>{t('production.generatenow')}</div>
-                    {paintingOrderId && paintingPrice && <GenerationButton orderId={paintingOrderId} price={paintingPrice} callback={fetchHistory} />}
+                    {/* {paintingOrderId && paintingPrice && <GenerationButton orderId={paintingOrderId} price={paintingPrice} />} */}
                 </div>
             </div>
             <div className={styles['production-preview']}>
